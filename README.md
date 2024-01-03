@@ -21,8 +21,19 @@ We’ve left this prompt intentionally vague. Focus on showing us what you’re 
 * Server side: ExpressJS, EJS (template engine)
 * Client Side: VanillaJS
 
+No external libraries has been used to interact with the APIs or displaying the results.
+
 *Why Javascript?*
 Based on the task description, it made sense to complete the task in JS and HTML as the combination allows for more control over the visuals of the list compared to python, and thus provides a user friendly interface for interacting with the list. 
 
 In addition to the interface element, JS also has ExpressJS which is a very lightweight server compared to libraries such as Django in Python or Spring in Java which are much heavier.
 
+Lastly, JS makes it very easy to interact with APIs in an asynchronous manner.
+
+**What excites me to work at Stevens IT Team**
+
+I am genuinly excited about working on the Stevens IT team for several reasons,
+
+* Professional Development: The work Stevens IT team does aligns with my own career goal, and the idea of working alongside talented individuals is something that I find inspiring. I am eager to learn and grow with the team.
+
+* Innovation and Impactful Contribution: Stevens IT team is working on the cutting edge technolgies in the field of education, and I am eager to learn and contribute to innovative work.
