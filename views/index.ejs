@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Star Warss</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .main-wrapper {
+            background-color: rgb(255, 255, 255);
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .character-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1rem;
+            list-style: none;
+            width: 250px;
+            transition: 0.25s ease-in-out;
+        }
+
+        #character-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .card-field {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .character-card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .head-txt {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #121212;
+        }
+
+        .loading-state {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid #ddd;
+            border-top-color: orange;
+            animation: loading 1s linear infinite;
+        }
+
+        #paginationBtns {
+            display: none;
+        }
+
+        #prev-btn,
+        #next-btn {
+            background-color: #ffb700;
+            border-radius: 28px;
+            border: 1px solid #ffbb0f;
+            display: inline-block;
+            cursor: pointer;
+            color: #ffffff;
+            font-family: Arial;
+            font-size: 17px;
+            padding: 16px 31px;
+            text-decoration: none;
+            text-shadow: 0px 1px 0px #fa9e00;
+        }
+
+        #prev-btn:hover,
+        #next-btn:hover {
+            background-color: #ff8c00;
+        }
+
+        #prev-btn:active,
+        #next-btn:active {
+            position: relative;
+            top: 1px;
+        }
+
+        .btn-div {
+            width: fit-content;
+            margin: 2rem auto;
+        }
+
+        @keyframes loading {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper" id="character-container">
+        <h2 class="head-txt">Characters -</h2>
+        <div class="loading-state" id="loadingSpinner">
+            <div class="loading"></div>
+        </div>
+        <ul id="character-list">
+        </ul>
+        <div id="paginationBtns" class="btn-div">
+            <button class="" id="prev-btn">Previous</button>
+            <button class="" id="next-btn">Next</button>
+        </div>
+    </div>
+    <script>
+
+        // constants
+        const startUrl = 'https://swapi.dev/api/people/'
+        const nextButton = document.getElementById('next-btn')
+        const prevButton = document.getElementById('prev-btn')
+        const container = document.getElementById('character-list')
+        const loadingSpinner = document.getElementById('loadingSpinner')
+        const paginationBtns = document.getElementById('paginationBtns')
+        let nextUrl = '';
+        let prevUrl = '';
+
+
+        // events
+        document.addEventListener("DOMContentLoaded", function () {
+            //console.log('Document Loaded')
+            fetchCharacters(startUrl)
+        });
+
+
+
+        nextButton.addEventListener('click', handleNext)
+        prevButton.addEventListener('click', handlePrev)
+
+        // handlers
+        function fetchCharacters(url) {
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data)
+                    populateList(data)
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+
+        function populateList(data) {
+
+            loadingSpinner.style.display = 'none';
+            paginationBtns.style.display = 'block';
+
+            if (!data.next) nextButton.style.display = 'none';
+            else nextButton.style.display = 'inline-block';
+            if (!data.previous) prevButton.style.display = 'none';
+            else prevButton.style.display = 'inline-block';
+
+            if (data.results.length > 0) {
+
+                nextUrl = data.next;
+                prevUrl = data.previous;
+                let cardHtml = ''
+
+                data.results.forEach(element => {
+                    const vehicleUrl = '/vehicle/' + getIdFromUrl(element.url)
+                    cardHtml += `
+                    <a href="${vehicleUrl}">
+                        <li class="character-card">
+                            <div class="card-field"><p>Name:</p><p>${element.name}</p></div>
+                            <div class="card-field"><p>Height:</p><p>${element.height}</p></div>
+                            <div class="card-field"><p>Mass:</p><p>${element.mass}</p></div>
+                            <div class="card-field"><p>Hair color:</p><p>${element.hair_color}</p></div>
+                            <div class="card-field"><p>Skin color:</p><p>${element.skin_color}</p></div>
+                            <div class="card-field"><p>Eye color:</p><p>${element.eye_color}</p></div>
+                            <div class="card-field"><p>Birth year:</p><p>${element.birth_year}</p></div>
+                            <div class="card-field"><p>Gender:</p><p>${element.gender}</p></div>
+                        </li>
+                    </a>
+                    `
+                });
+                container.innerHTML = cardHtml;
+
+            } else {
+                container.innerHTML = '<p>There was an Error loading resources from the Star wars API. Please Try Again Later</p>'
+            }
+        }
+
+        function emptyList() {
+            container.innerHTML = '';
+        }
+
+        function handleNext() {
+            if (!nextUrl) return
+
+            emptyList();
+            loadingSpinner.style.display = 'flex';
+            paginationBtns.style.display = 'none';
+            fetchCharacters(nextUrl);
+        }
+
+        function handlePrev() {
+            if (!prevUrl) return
+
+            emptyList();
+            loadingSpinner.style.display = 'flex';
+            paginationBtns.style.display = 'none';
+            fetchCharacters(prevUrl)
+
+        }
+
+        function getIdFromUrl(url) {
+            let splitStuff = url.split('/')
+            return splitStuff[splitStuff.length - 2]
+        }
+    </script>
+</body>
+
+</html>

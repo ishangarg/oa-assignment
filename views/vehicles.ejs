@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Star Wars - Vehciles</title>
+    <style>
+        p {
+            margin: 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .main-wrapper {
+            background-color: rgb(255, 255, 255);
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .character-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1rem;
+            list-style: none;
+            width: 300px;
+            transition: 0.25s ease-in-out;
+        }
+
+        .card-field {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+        }
+
+        #vehicle-list,
+        #starship-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .vehicle-div {
+            padding: 10px;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            margin-top: 10px;
+        }
+
+
+        .container {
+            padding: 30px;
+        }
+
+        .loading-state {
+            width: 100%;
+            height: 80px;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 4px solid #ddd;
+            border-top-color: orange;
+            animation: loading 1s linear infinite;
+        }
+
+        .btn-wrapper {
+            width: 100%;
+        }
+
+        .btn {
+            background-color: #ffb700;
+            border-radius: 28px;
+            border: 1px solid #ffbb0f;
+            display: inline-block;
+            cursor: pointer;
+            color: #ffffff;
+            font-family: Arial;
+            font-size: 17px;
+            padding: 16px 31px;
+            text-decoration: none;
+            text-shadow: 0px 1px 0px #fa9e00;
+            width: 90%;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #ff8c00;
+        }
+
+        .btn:active {
+            position: relative;
+            top: 1px;
+        }
+
+        @keyframes loading {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="btn-wrapper">
+            <a class="btn" href="/">Go Back</a>
+        </div>
+        <div class="main-wrapper" id="vehicle-container">
+            <h2>Vehicles</h2>
+            <div class="loading-state" id="loadingSpinnerVehicle">
+                <div class="loading"></div>
+            </div>
+            <ul id="vehicle-list">
+            </ul>
+            <hr>
+            <h2>Starships</h2>
+            <div class="loading-state" id="loadingSpinnerStarships">
+                <div class="loading"></div>
+            </div>
+            <ul id="starship-list">
+            </ul>
+        </div>
+    </div>
+    <script>
+        var id = "<%= id %>"
+
+        document.addEventListener("DOMContentLoaded", function () {
+            //console.log('Document Loaded')
+            const startUrl = 'https://swapi.dev/api/people/' + id + '/'
+            fetchUser(startUrl);
+        });
+
+        function fetchUser(url) {
+            fetch(url).
+                then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let listOfVehicles = data.vehicles
+                    let listOfStarships = data.starships
+
+                    if (listOfVehicles.length > 0) {
+                        listOfVehicles.forEach(element => {
+                            fetchVehicle(element, 'v')
+                        });
+                    }
+                    else {
+                        loadingSpinnerVehicle.style.display = 'none';
+                        const vehicleList = document.getElementById('vehicle-list')
+                        vehicleList.innerText = "No Vehicles"
+                    }
+                    if (listOfStarships.length > 0) {
+                        listOfStarships.forEach(element => {
+                            fetchVehicle(element, 's')
+                        })
+                    }
+                    else {
+                        loadingSpinnerStarships.style.display = 'none';
+                        const starshipsList = document.getElementById('starship-list')
+                        starshipsList.innerText = "No Starships"
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+
+        function fetchVehicle(url, type) {
+            fetch(url).
+                then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network respone not ok')
+                    }
+                    return response.json()
+                }).
+                then(data => {
+                    console.log(':::', data)
+                    if (type == 'v') {
+                        loadingSpinnerVehicle.style.display = 'none';
+                        populateData(data)
+                    } else {
+                        loadingSpinnerStarships.style.display = 'none';
+                        populateStarship(data)
+                    }
+                }).catch(error => {
+                    console.error('There was a problem with the fetch operation (Vehicle URL):', error);
+
+                })
+        }
+
+        function populateData(data) {
+            const vehicleList = document.getElementById('vehicle-list')
+            let card = `<li class="character-card">
+                            <div class="card-field"><p>Name:</p><p>${data.name}</p></div>
+                            <div class="card-field"><p>Model:</p><p>${data.model}</p></div>
+                            <div class="card-field"><p>Manufacturer:</p><p>${data.manufacturer}</p></div>
+                            <div class="card-field"><p>Length:</p><p>${data.length}</p></div>
+                            <div class="card-field"><p>Crew:</p><p>${data.crew}</p></div>
+                            <div class="card-field"><p>Passengers:</p><p>${data.passengers}</p></div>
+                        </li>`
+            vehicleList.insertAdjacentHTML('beforeend', card);
+        }
+
+        function populateStarship(data) {
+            const starshipsList = document.getElementById('starship-list')
+            let card = `<li class="character-card">
+                            <div class="card-field"><p>Name:</p><p>${data.name}</p></div>
+                            <div class="card-field"><p>Model:</p><p>${data.model}</p></div>
+                            <div class="card-field"><p>Manufacturer:</p><p>${data.manufacturer}</p></div>
+                            <div class="card-field"><p>Length:</p><p>${data.length}</p></div>
+                            <div class="card-field"><p>Crew:</p><p>${data.crew}</p></div>
+                            <div class="card-field"><p>Passengers:</p><p>${data.passengers}</p></div>
+                        </li>`
+            starshipsList.insertAdjacentHTML('beforeend', card);
+        }
+    </script>
+</body>
+
+</html>
