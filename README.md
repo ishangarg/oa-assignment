@@ -30,6 +30,16 @@ In addition to the interface element, JS also has ExpressJS which is a very ligh
 
 Lastly, JS makes it very easy to interact with APIs in an asynchronous manner.
 
+**Future Enhancements**
+
+This is just a demonstration to show my capablitites. In the future, based on the API, the following enhancments are possible,
+
+* Search: Right now the response returned from fetch() is not being stored locally. They can be stored locally, to create real-time local search for star wars characters.
+
+* Related Characters: Using a graph where each node is a movie, and edge a character its possible to find the related characters.
+
+* Queries: Using SQL or MongoDB is possible to create queries for fetching characters with certain traits such as 'find characters with brown hair'. 
+
 **What excites me to work at Stevens IT Team**
 
 I am genuinly excited about working on the Stevens IT team for several reasons,
